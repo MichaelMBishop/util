@@ -1,7 +1,7 @@
 # util.R:
 # Utilities to make R a happier place
 # Edited and maintained by Michael Metcalf Bishop, https://github.com/MichaelMBishop/util
-# Originally Authored by Brendan O'Connor, brenocon.com/code
+# Originally authored by Brendan O'Connor, brenocon.com/code
 
 
 ########################################
