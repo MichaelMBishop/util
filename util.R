@@ -1,6 +1,7 @@
 # util.R:
 # Utilities to make R a happier place
-# Brendan O'Connor, brenocon.com/code
+# Edited and maintained by Michael Metcalf Bishop, https://github.com/MichaelMBishop/util
+# Originally Authored by Brendan O'Connor, brenocon.com/code
 
 
 ########################################
@@ -443,6 +444,76 @@ util$dosvg <- function(filename, ..., cmd, open=NULL) {
 
 ########################################
 ## Plotting routines
+
+gsummary <- function(data_to_plot)
+{
+## univariate data summary
+require(nortest)
+#data <- as.numeric(scan ("data.txt")) 
+data <- na.omit(as.numeric(as.character(data_to_plot))) 
+dataFull <- as.numeric(as.character(data_to_plot))
+dataMost <- na.omit(dataMost <- ifelse(data < quantile(data,.01), NA, 
+                                       ifelse(data > quantile(data,.99), NA, data)))  
+# save the graphics parameters currently in use
+def.par <- par(no.readonly = TRUE)
+par("plt" = c(.2,.95,.2,.8))
+layout( matrix(c(1,1,2,2,1,1,2,2,4,5,8,8,6,7,9,10,3,3,9,10), 5, 4, byrow = TRUE))
+
+#histogram on the top left
+h <- hist(data, breaks = "FD", plot = FALSE)
+xfit<-seq(min(data),max(data),length=100)
+yfit<-yfit<-dnorm(xfit,mean=mean(data),sd=sd(data))
+yfit <- yfit*diff(h$mids[1:2])*length(data)
+plot (h,  axes = TRUE, main = paste(deparse(substitute(data_to_plot))), cex.main=2, xlab=NA)
+lines(xfit, yfit, col="blue", lwd=2)
+leg1 <- paste("mean = ", round(mean(data), digits = 4))
+leg2 <- paste("sd = ", round(sd(data),digits = 4))
+count <- paste("count = ", sum(!is.na(dataFull)))
+missing <- paste("missing = ", sum(is.na(dataFull)))
+legend(x = "topright", c(leg1,leg2,count,missing), bty = "n")
+?hist
+## normal qq plot
+qqnorm(data, bty = "n", pch = 20)
+qqline(data)
+p <- ad.test(data)
+leg <- paste("Anderson-Darling p = ", round(as.numeric(p[2]), digits = 4))
+legend(x = "topleft", leg, bty = "n")
+
+## boxplot (bottom left)
+boxplot(data, horizontal = TRUE)
+leg1 <- paste("median = ", round(median(data), digits = 4))
+lq <- quantile(data, 0.25)
+leg2 <- paste("25th percentile =  ", round(lq,digits = 4))
+uq <- quantile(data, 0.75)
+leg3 <- paste("75th percentile = ", round(uq,digits = 4))
+legend(x = "top", leg1, bty = "n")
+legend(x = "bottom", paste(leg2, leg3, sep = "; "), bty = "n")
+
+## the various histograms with different bins
+h2 <- hist(dataMost,  breaks = (0:20 * (max(dataMost) - min (dataMost))/20)+min(dataMost), plot = FALSE)
+plot (h2, xlim=range(min(dataMost):quantile(dataMost, 0.99)), axes = TRUE, main = "20 bins")
+
+h3 <- hist(dataMost,  breaks = (0:10 * (max(dataMost) - min (dataMost))/10)+min(dataMost), plot = FALSE)
+plot (h3, xlim=range(min(dataMost):quantile(dataMost, 0.99)), axes = TRUE, main = "10 bins")
+
+h4 <- hist(dataMost, breaks = "Sturges", plot = FALSE)
+plot (h4, xlim=range(min(dataMost):quantile(dataMost, 0.99)), axes = TRUE, main = "8 bins")
+
+h5 <- hist(dataMost,  breaks = (0:6 * (max(dataMost) - min (dataMost))/6)+min(dataMost), plot = FALSE)
+plot (h5, axes = TRUE,main = "6 bins")
+
+## the time series, ACF and PACF
+plot (data, main = "Time series", pch = 20, ylab=paste(deparse(substitute(data_to_plot))))
+acf(data, lag.max = 20, xlab="ACF Lag")
+pacf(data, lag.max = 20, xlab="PACF Lag")
+
+## reset the graphics display to previous settings
+par(def.par)
+
+# original code for gsummary by respiratoryclub.  edits by Michael Metcalf Bishop
+}
+
+
 
 util$linelight <- function(x,y, lty='dashed', col='lightgray', ...) {
   # highlight a point with lines running to the axes.
