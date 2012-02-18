@@ -3,8 +3,22 @@
 # Edited and maintained by Michael Metcalf Bishop, https://github.com/MichaelMBishop/util
 # Originally authored by Brendan O'Connor, brenocon.com/code
 
+# HOW TO USE?
+# if, for example, util.R is found in: "C:/R/util.R" then 
+# > source("C:/R/util.R")
+# would make the functions from util.R accessible 
+# to use function "as.c()" as an example, you could type:
+# > x_character <- util$as.c(x_numeric)
+# or for convenience
+# > attach(util)
+# at the beginning of your session and then you can write the function name without
+# the util$, e.g.
+# > x_character <- as.c(x_numeric)
+
+
 
 ########################################
+
 ## Tell R the terminal width.  Needs to be re-run every time you resize the
 ## terminal, so source() this file 
 
@@ -69,6 +83,13 @@ util$write.tsv <- function(..., header=NA, col.names=F, row.names=F, sep='\t', n
 ##  Misc small routines
 
 util$as.c <- as.character
+
+util$as.n <- as.numeric
+
+util$as.nc <- function(to_be_numeric) {
+  print("as.nc() is = as.numeric(as.character(to_be_numeric))") # this line helps newbies understand
+  as.numeric(as.character(to_be_numeric))
+}
 
 util$unwhich <- function(indices, len=length(indices)) {
   # reverse of which(): from indices to boolean mask.
