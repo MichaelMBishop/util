@@ -3,9 +3,16 @@
 # Edited and maintained by Michael Metcalf Bishop, https://github.com/MichaelMBishop/util
 # Originally authored by Brendan O'Connor, brenocon.com/code
 
+# WARNING: This script could lead to bad habits
+# Most of the functions below are designed to ease/speed exploratory analysis. 
+# This is nice, HOWEVER, using them could reduce code readability and reproducibility. 
+# Think about whether/how to use these functions in analyses you'd like to save/share.
+
 # HOW TO USE?
 # if, for example, util.R is found in: "C:/R/util.R" then 
-# > source("C:/R/util.R")
+# > source("~/R/util.R")
+# or
+# source("C:/R/util.R")
 # would make the functions from util.R accessible 
 # to use function "as.c()" as an example, you could type:
 # > x_character <- util$as.c(x_numeric)
@@ -82,14 +89,6 @@ util$write.tsv <- function(..., header=NA, col.names=F, row.names=F, sep='\t', n
 ########################################
 ##  Misc small routines
 
-util$as.c <- as.character
-
-util$as.n <- as.numeric
-
-util$as.nc <- function(to_be_numeric) {
-  print("as.nc() is = as.numeric(as.character(to_be_numeric))") # this line helps newbies understand
-  as.numeric(as.character(to_be_numeric))
-}
 
 util$unwhich <- function(indices, len=length(indices)) {
   # reverse of which(): from indices to boolean mask.
@@ -249,16 +248,12 @@ util$multi_xprod <- function(args) {
 ## Printing, viewing
 ## see also:  str()
 
-util$printf <- function(...) cat(sprintf(...))
-
 util$listprint <- function(x) {
   s = paste(sapply(names(x), function(n)  sprintf("%s=%s", n,x[[n]])), collapse=' ')
   printf("%s\n", s)
 }
 
 util$msg <- function(...)  cat(..., "\n", file=stderr())
-
-util$h = utils::head
 
 util$ppy <- function(x, column.major=FALSE, ...) {
   # pretty-print as yaml.  intended for rows with big textual cells.
@@ -398,7 +393,7 @@ util$excel <- function(d) {
   write.csv(d, con, row.names=FALSE)
   close(con)
   # system(paste("open -a 'Microsoft Excel' ",f, sep=''))
-  system(paste("open -a '/Applications/Microsoft Office 2008/Microsoft Excel.app' ",f, sep=''))
+  system(paste("open -a '/Applications/Microsoft Office 2011/Microsoft Excel.app' ",f, sep=''))
 }
 
 util$mate <- function(...) {
@@ -720,30 +715,6 @@ util$rand_lt <- function(x,y)  ! rand_gt(x,y)
 
 ########################################
 # Deprecated
-
-## now in plyr 0.19 as summarise() http://github.com/hadley/plyr/blob/master/NEWS
-# util$reframe = function(.data, ...) {
-#   e = eval(substitute(list(...)), .data, parent.frame())
-#   data.frame(e)
-# }
-
-# util$table.range <- function(x, min=NULL, max=NULL) {
-#   ## DEPRECATED: use factor() on both sides, instead, to specify the allowable range
-#   # Like table(), but only for integers, and forces a contiguous range of bins
-#   # so counts of 0 can appear.  Useful if you want to compare tables between
-#   # different datasets.
-#   if (is.null(min))  min = min(x)
-#   if (is.null(max))  max = max(x)
-#   x2 = rep(0, max-min+1)
-#   t = table(x)
-#   t_inds = as.integer(names(t))
-#   t_mask = t_inds >= min  &  t_inds <= max
-#   t_inds = t_inds[t_mask]
-#   mask = t_inds - min + 1
-#   x2[mask] = x2[mask] + t[t_mask]
-#   names(x2) = min:max
-#   x2
-# }
 
 ########################################
 
